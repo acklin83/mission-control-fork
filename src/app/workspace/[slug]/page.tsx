@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, ListTodo, Users, Activity, Settings as SettingsIcon, ExternalLink, Home, BarChart3 } from 'lucide-react';
+import { ChevronLeft, ListTodo, Users, Activity, Settings as SettingsIcon, ExternalLink, Home, BarChart3, Bitcoin } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { AgentsSidebar } from '@/components/AgentsSidebar';
 import { MissionQueue } from '@/components/MissionQueue';
@@ -15,7 +15,7 @@ import { useSSE } from '@/hooks/useSSE';
 import { debug } from '@/lib/debug';
 import type { Task, Workspace } from '@/lib/types';
 
-type MobileTab = 'queue' | 'agents' | 'feed' | 'settings';
+type MobileTab = 'queue' | 'agents' | 'feed' | 'bitcoin' | 'settings';
 
 export default function WorkspacePage() {
   const params = useParams();
@@ -240,13 +240,18 @@ export default function WorkspacePage() {
                 <LiveFeed mobileMode isPortrait />
               </div>
             )}
+            {mobileTab === 'bitcoin' && (
+              <div className="h-full p-3 overflow-y-auto">
+                <BitcoinWidget />
+              </div>
+            )}
             {mobileTab === 'settings' && <MobileSettingsPanel workspace={workspace} />}
           </>
         ) : (
           <div className="h-full p-3 grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] gap-3">
             <MissionQueue workspaceId={workspace.id} mobileMode isPortrait={false} />
             <div className="min-w-0 h-full flex flex-col gap-3">
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 <button
                   onClick={() => setMobileTab('agents')}
                   className={`min-h-11 rounded-lg text-xs ${mobileTab === 'agents' ? 'bg-mc-accent text-mc-bg font-medium' : 'bg-mc-bg-secondary border border-mc-border text-mc-text-secondary'}`}
@@ -260,6 +265,12 @@ export default function WorkspacePage() {
                   Feed
                 </button>
                 <button
+                  onClick={() => setMobileTab('bitcoin')}
+                  className={`min-h-11 rounded-lg text-xs ${mobileTab === 'bitcoin' ? 'bg-mc-accent text-mc-bg font-medium' : 'bg-mc-bg-secondary border border-mc-border text-mc-text-secondary'}`}
+                >
+                  ₿itcoin
+                </button>
+                <button
                   onClick={() => setMobileTab('settings')}
                   className={`min-h-11 rounded-lg text-xs ${mobileTab === 'settings' ? 'bg-mc-accent text-mc-bg font-medium' : 'bg-mc-bg-secondary border border-mc-border text-mc-text-secondary'}`}
                 >
@@ -270,6 +281,8 @@ export default function WorkspacePage() {
               <div className="min-h-0 flex-1">
                 {mobileTab === 'settings' ? (
                   <MobileSettingsPanel workspace={workspace} denseLandscape />
+                ) : mobileTab === 'bitcoin' ? (
+                  <BitcoinWidget />
                 ) : mobileTab === 'agents' ? (
                   <AgentsSidebar workspaceId={workspace.id} mobileMode isPortrait={false} />
                 ) : (
@@ -283,10 +296,11 @@ export default function WorkspacePage() {
 
       {showMobileBottomTabs && (
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-mc-border bg-mc-bg-secondary pb-[env(safe-area-inset-bottom)]">
-          <div className="grid grid-cols-4 gap-1 p-2">
+          <div className="grid grid-cols-5 gap-1 p-2">
             <MobileTabButton label="Queue" active={mobileTab === 'queue'} icon={<ListTodo className="w-5 h-5" />} onClick={() => setMobileTab('queue')} />
             <MobileTabButton label="Agents" active={mobileTab === 'agents'} icon={<Users className="w-5 h-5" />} onClick={() => setMobileTab('agents')} />
             <MobileTabButton label="Feed" active={mobileTab === 'feed'} icon={<Activity className="w-5 h-5" />} onClick={() => setMobileTab('feed')} />
+            <MobileTabButton label="Bitcoin" active={mobileTab === 'bitcoin'} icon={<Bitcoin className="w-5 h-5" />} onClick={() => setMobileTab('bitcoin')} />
             <MobileTabButton label="Settings" active={mobileTab === 'settings'} icon={<SettingsIcon className="w-5 h-5" />} onClick={() => setMobileTab('settings')} />
           </div>
         </nav>
