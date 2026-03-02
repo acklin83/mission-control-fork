@@ -13,7 +13,7 @@ services:
       WORKSPACE_BASE_PATH: /app/workspace
       PROJECTS_PATH: /app/workspace/projects
       # OpenClaw Gateway (läuft auf selber Synology)
-      OPENCLAW_GATEWAY_URL: ws://host.docker.internal:18789
+      OPENCLAW_GATEWAY_URL: ws://172.17.0.1:18789
       OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
       # Bitcoin API (läuft auf selber Synology)
       BITCOIN_API_URL: http://192.168.177.3:3000/api/bitcoin
