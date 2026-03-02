@@ -36,10 +36,10 @@ export function createRateLimiter(opts: RateLimiterOptions = {}) {
   // Periodic cleanup to prevent unbounded growth
   const cleanup = setInterval(() => {
     const now = Date.now();
-    for (const [key, entry] of store) {
+    Array.from(store.entries()).forEach(([key, entry]) => {
       entry.timestamps = entry.timestamps.filter((t) => now - t < windowMs);
       if (entry.timestamps.length === 0) store.delete(key);
-    }
+    });
   }, cleanupIntervalMs);
 
   // Allow GC if the module is unloaded

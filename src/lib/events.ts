@@ -26,13 +26,13 @@ const clients = new Map<ReadableStreamDefaultController, ClientEntry>();
 // Periodic idle sweep (runs every 60 s)
 const idleSweep = setInterval(() => {
   const now = Date.now();
-  for (const [ctrl, entry] of clients) {
+  Array.from(clients.entries()).forEach(([ctrl, entry]) => {
     if (now - entry.lastActiveAt > CLIENT_IDLE_TIMEOUT_MS) {
       console.log(`[SSE] Removing idle client (idle ${Math.round((now - entry.lastActiveAt) / 1000)}s)`);
       try { ctrl.close(); } catch { /* already closed */ }
       clients.delete(ctrl);
     }
-  }
+  });
 }, 60_000);
 if (idleSweep.unref) idleSweep.unref();
 
@@ -44,9 +44,11 @@ export function registerClient(controller: ReadableStreamDefaultController): boo
   // Enforce max clients
   if (clients.size >= MAX_CLIENTS) {
     // Evict the oldest client to make room
-    let oldestCtrl: ReadableStreamDefaultController | null = null;
+    let oldestCtrl: ReadableStreamDefaultController | undefined;
     let oldestTime = Infinity;
-    for (const [ctrl, entry] of clients) {
+    const entries = Array.from(clients.entries());
+    for (let i = 0; i < entries.length; i++) {
+      const [ctrl, entry] = entries[i];
       if (entry.connectedAt < oldestTime) {
         oldestTime = entry.connectedAt;
         oldestCtrl = ctrl;
@@ -83,7 +85,7 @@ export function broadcast(event: SSEEvent): void {
   const data = `data: ${JSON.stringify(event)}\n\n`;
   const encoded = encoder.encode(data);
 
-  for (const [ctrl, entry] of clients) {
+  Array.from(clients.entries()).forEach(([ctrl, entry]) => {
     try {
       ctrl.enqueue(encoded);
       entry.lastActiveAt = Date.now();
@@ -92,7 +94,7 @@ export function broadcast(event: SSEEvent): void {
       console.error('Failed to send SSE event to client:', error);
       clients.delete(ctrl);
     }
-  }
+  });
 
   console.log(`[SSE] Broadcast ${event.type} to ${clients.size} client(s)`);
 }
