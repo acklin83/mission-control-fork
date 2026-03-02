@@ -18,7 +18,8 @@ services:
       # Bitcoin API (läuft auf selber Synology)
       BITCOIN_API_URL: http://192.168.177.3:3000/api/bitcoin
       # Security
-      MC_API_TOKEN: ${MC_API_TOKEN:-94a036f5adc255257b1d9ed63b0155762231b3d8b326991e60d33eb5463c41b3}
+      # MC_API_TOKEN: disabled for now (same-origin check needs debugging)
+      # MC_API_TOKEN: ${MC_API_TOKEN:-}
       WEBHOOK_SECRET: ${WEBHOOK_SECRET:-a7f23b0a5bb01e7d06ce6dd9a016297398d271ffd68ce9d45462d6c44735542a}
       # SSE
       SSE_MAX_CLIENTS: "100"
