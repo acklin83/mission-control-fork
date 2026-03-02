@@ -1,0 +1,31 @@
+services:
+  mission-control:
+    container_name: mission-control
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mission-control:latest
+    ports:
+      - "4200:4000"
+    environment:
+      NODE_ENV: production
+      DATABASE_PATH: /app/data/mission-control.db
+      WORKSPACE_BASE_PATH: /app/workspace
+      PROJECTS_PATH: /app/workspace/projects
+      # OpenClaw Gateway (läuft auf selber Synology)
+      OPENCLAW_GATEWAY_URL: ws://192.168.177.3:18789
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
+      # Bitcoin API (läuft auf selber Synology)
+      BITCOIN_API_URL: http://192.168.177.3:3000/api/bitcoin
+      # Security
+      MC_API_TOKEN: ${MC_API_TOKEN:-94a036f5adc255257b1d9ed63b0155762231b3d8b326991e60d33eb5463c41b3}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-a7f23b0a5bb01e7d06ce6dd9a016297398d271ffd68ce9d45462d6c44735542a}
+      # SSE
+      SSE_MAX_CLIENTS: "100"
+      SSE_IDLE_TIMEOUT_MS: "300000"
+    volumes:
+      - /volume1/docker/mission-control/data:/app/data
+      - /volume1/docker/mission-control/workspace:/app/workspace
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
